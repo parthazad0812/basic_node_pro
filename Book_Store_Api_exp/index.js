@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const port = 8000;
+const fs=require("node:fs");
 
 const books = [
   { id: 1, title: "Harry Potter", author: "J.K.Rowling" },
@@ -8,8 +9,18 @@ const books = [
   { id: 3, title: "Follow the path of Dao from infancy", author: "Ancient Xi" },
 ];
 
+//// Middlewares (plugins) ( for body here other wise no o/p would be shown {})
+app.use(express.json());
+
+app.use((req,res,next)=>{
+  const log=`[${Date.now()}] Method - ${req.method}, Path - ${req.path}\n`;
+  fs.appendFileSync("logs.txt",log,'utf-8');
+  next();
+})
+
 // Routes
 // json->key value pair
+
 app.get("/books", (req, res) => {
   res.setHeader("x-Made-by", "Parth");
   res.json(books);
@@ -37,8 +48,7 @@ app.get("/books/:id", (req, res) => {
   return res.json(book);
 });
 
-//// Middlewares (plugins) ( for body here other wise no o/p would be shown {})
-app.use(express.json());
+
 
 app.post("/books", (req, res) => {
   const { title, author } = req.body;
